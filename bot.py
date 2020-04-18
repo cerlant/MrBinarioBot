@@ -4,9 +4,9 @@ import logging
 
 from telegram.ext import Updater, CommandHandler,  MessageHandler, Filters
 
-TOKEN = os.environ.get('TOKEN')
-PORT = os.environ.get('PORT', '8443')
-USE_WEBHOOK =  os.environ.get('USE_WEBHOOK') or False
+TOKEN = os.environ['TOKEN']
+PORT = os.environ['PORT']
+USE_WEBHOOK =  os.environ['USE_WEBHOOK'] or False
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
