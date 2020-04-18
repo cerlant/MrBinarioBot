@@ -13,7 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-binary_reply = False
+binary_reply = True
 
 welcome_text = '''\
                Saludos, mi nombre es Binario.
@@ -27,30 +27,50 @@ def to_ascii(binary_string):
 def to_bin(text):
     return ' '.join(format(ord(i), 'b') for i in text)
 
+def binnum(update, context):
+    result = ''
+    try:
+        result = str(int(context.args[0],2))
+    except:
+        result = 'Asegurate de escribir el número binario correctamente.'
+    context.bot.send_message(chat_id=update.effective_chat.id, text=result)
+
+def numbin(update, context):
+    result = ''
+    try:
+        result = str(bin(int(context.args[0])))[2:]
+    except:
+        result = 'Asegurate de escribir el número correctamente.'
+    context.bot.send_message(chat_id=update.effective_chat.id, text=result)
+
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=welcome_text)
 
 def ascii_mode(update, context):
-    binary_reply = False
+    binary_reply = True
+    print(binary_reply)
     text = 'Ahora traduciré tus mensajes a código binario(ASCII)'
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 def binary_mode(update, context):
-    binary_reply = True
+    binary_reply = False
+    print(binary_reply)
     text = 'Ahora traducire tus mensajes a código binario(ASCII)'
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)    
 
 def m_handler(update, context):
     """Reply the user message with it translation."""
-    text = updater.message.text
+    text = update.message.text
+    print(binary_reply)
     if binary_reply:
+
         reply = to_bin(text)
     else:
         try:
             reply = to_ascii(text)
         except:
-            reply = 'Por favor dime algo en binario o cambia el modo int'
+            reply = 'Por favor dime algo en binario o cambia el modo'
 
     update.message.reply_text(reply)
 
@@ -68,10 +88,12 @@ def main():
 
     # Commands
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("binnum", binnum))
+    dp.add_handler(CommandHandler("numbin", numbin))
     dp.add_handler(CommandHandler("ascii_mode", ascii_mode))
     dp.add_handler(CommandHandler("binary_mode", binary_mode))
     # Message handlers
-    dp.add_handler(MessageHandler(Filters.text, text_to_bin))
+    dp.add_handler(MessageHandler(Filters.text, m_handler))
 
     # log all errors
     dp.add_error_handler(error)
