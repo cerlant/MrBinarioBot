@@ -48,7 +48,7 @@ def start(update, context):
 
 def ascii_mode(update, context):
     context.user_data['binary_mode'] = False
-    text = 'Ahora traduciré tus mensajes a código binario(ASCII)'
+    text = 'Ahora traduciré tus mensajes del código binario a ASCII'
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 def binary_mode(update, context):
