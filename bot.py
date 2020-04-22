@@ -7,19 +7,18 @@ from telegram.ext import Updater, CommandHandler,  MessageHandler, Filters
 TOKEN = os.environ['TOKEN']
 PORT = os.environ['PORT']
 USE_WEBHOOK =  os.environ['USE_WEBHOOK'] or False
+
 # Enable logging
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
-binary_reply = True
 
-welcome_text = '''\
-               Saludos, mi nombre es Binario.
-               Fui hecho para ayudarte a traducir tu idioma al código binario
-               y viceversa.\n Dime algo.
-               '''
+welcome_text = 'Saludos, mi nombre es Binario.\n Fui hecho para ayudarte a' \
+               'traducir tu idioma al código binario(ASCII)' \
+               'y viceversa.\n Dime algo.'
 
 def to_ascii(binary_string):
     return ''.join([chr(int(binary,2)) for binary in binary_string.split(' ')])
@@ -32,7 +31,7 @@ def binnum(update, context):
     try:
         result = str(int(context.args[0],2))
     except:
-        result = 'Asegurate de escribir el número binario correctamente.'
+        result = 'Asegúrate de escribir el número binario correctamente.'
     context.bot.send_message(chat_id=update.effective_chat.id, text=result)
 
 def numbin(update, context):
@@ -40,7 +39,7 @@ def numbin(update, context):
     try:
         result = str(bin(int(context.args[0])))[2:]
     except:
-        result = 'Asegurate de escribir el número correctamente.'
+        result = 'Asegúrate de escribir el número correctamente.'
     context.bot.send_message(chat_id=update.effective_chat.id, text=result)
 
 def start(update, context):
@@ -48,29 +47,31 @@ def start(update, context):
                              text=welcome_text)
 
 def ascii_mode(update, context):
-    binary_reply = True
-    print(binary_reply)
+    context.user_data['binary_mode'] = False
     text = 'Ahora traduciré tus mensajes a código binario(ASCII)'
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 def binary_mode(update, context):
-    binary_reply = False
-    print(binary_reply)
+    context.user_data['binary_mode'] = True
     text = 'Ahora traducire tus mensajes a código binario(ASCII)'
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)    
 
 def m_handler(update, context):
     """Reply the user message with it translation."""
     text = update.message.text
-    print(binary_reply)
-    if binary_reply:
 
+    try:
+        binary_reply = context.user_data['binary_mode']
+    except:
+        binary_reply = context.user_data['binary_mode'] = True # default
+
+    if binary_reply:
         reply = to_bin(text)
     else:
         try:
             reply = to_ascii(text)
         except:
-            reply = 'Por favor dime algo en binario o cambia el modo'
+            reply = 'Por favor dime algo en binario o cambia a el modo ASCII'
 
     update.message.reply_text(reply)
 
